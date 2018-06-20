@@ -16,43 +16,43 @@ package com.ngdroidapp;
 
 
 public class GameCanvas extends BaseCanvas {
-    private Bitmap tileset,spritesheet,rockset,button,bullet;//Zemin resmimiz,Kovboyumuz,Butonumuz
-    private Rect tilesource,tiledestination,spritesource,spritedestination,rocksource,rockdestination,buttonsource,buttondestination,
-            bulletsource,bulletdestination;
+    private Bitmap tileset, spritesheet, rockset, button, bullet;//Zemin resmimiz,Kovboyumuz,Butonumuz
+    private Rect tilesource, tiledestination, spritesource, spritedestination, rocksource, rockdestination, buttonsource, buttondestination,
+            bulletsource, bulletdestination;
 
     //tilesource genişlik,yükseklik, tiledestination,genişlik,yükseklik
-    private int tilesrcw,tilesrch,tiledstw,tiledsth;
-    private int tilesrcx,tilesrcy,tiledstx,tiledsty;
+    private int tilesrcw, tilesrch, tiledstw, tiledsth;
+    private int tilesrcx, tilesrcy, tiledstx, tiledsty;
     //button source genişlik yükseklik,buttondestination,genişlik,yükseklik
-    private int buttonsrcw,buttonsrch,buttondstw,buttondsth;
-    private int buttonsrcx,buttonsrcy,buttondstx,buttondsty;
+    private int buttonsrcw, buttonsrch, buttondstw, buttondsth;
+    private int buttonsrcx, buttonsrcy, buttondstx, buttondsty;
 
     //bulletsource genişlik,yükseklik, bulletdestination genişlik,yükseklik
-    private int bulletsrcw,bulletsrch,bulletdstw,bulletdsth;
-    private int bulletsrcx,bulletsrcy,bulletdstx,bulletdsty;
+    private int bulletsrcw, bulletsrch, bulletdstw, bulletdsth;
+    private int bulletsrcx, bulletsrcy, bulletdstx, bulletdsty;
     //bullet hız x/y , işaret x/y
-    private int bulletvx,bulletvy,bulletix,bulletiy;
+    private int bulletvx, bulletvy, bulletix, bulletiy;
 
     //spritesource genişlik,yükseklik, spritedestination,genişlik,yükseklik
-    private int spritesrcw,spritesrch,spritedstw,spritedsth;
-    private int spritesrcx,spritesrcy,spritedstx,spritedsty;
+    private int spritesrcw, spritesrch, spritedstw, spritedsth;
+    private int spritesrcx, spritesrcy, spritedstx, spritedsty;
     //sprite hız x/y, sprite işaret x/y
-    private int spritevx,spritevy,spriteix,spriteiy;
+    private int spritevx, spritevy, spriteix, spriteiy;
     //rocksource genişlik,yükseklik, rockdestination,genişlik,yükseklik
-    private int rocksrcw,rocksrch,rockdstw,rockdsth;
-    private int rocksrcx,rocksrcy,rockdstx,rockdsty;
+    private int rocksrcw, rocksrch, rockdstw, rockdsth;
+    private int rocksrcx, rocksrcy, rockdstx, rockdsty;
 
     //ekrana dokunmaya başladığımız noktanın x/y koordinatları
-    private int touchdownx,touchdowny;
+    private int touchdownx, touchdowny;
 
     //Yön belirteci
-    private int yon,shotcontrol;
+    private int yon, shotcontrol;
 
     //Animasyon türleri:durma,yürüme,silah doğrultma,ateş etme
-    private int animationtypes=4;
+    private int animationtypes = 4;
 
     //cowboy.png'deki kare numarası,animasyon türleri 0,1,2,3,karenumarası alt ve üst sınır.
-    private int framenum,animationtype,animationfirstfremenum[],animationlastframenum[];
+    private int framenum, animationtype, animationfirstfremenum[], animationlastframenum[];
     //ekrana do
 
     //ateş kontrolü
@@ -71,35 +71,35 @@ public class GameCanvas extends BaseCanvas {
         setupBullet();
     }
     public void setupTile(){
-        tileset=Utils.loadImage(root,"tilea2.png");
-        tilesource=new Rect();
-        tiledestination=new Rect();
+        tileset = Utils.loadImage(root,"tilea2.png");
+        tilesource = new Rect();
+        tiledestination = new Rect();
         //buttonset
         button=Utils.loadImage(root,"buttonpush.png");
-        buttonsource=new Rect();
-        buttondestination=new Rect();
-        buttonsrcx=0;
-        buttonsrcy=0;
-        buttonsrcw=button.getWidth()/2;
-        buttonsrch=button.getHeight();
-        buttondstw=getWidth()/4;
-        buttondsth=getWidth()/4;
+        buttonsource = new Rect();
+        buttondestination = new Rect();
+        buttonsrcx = 0;
+        buttonsrcy = 0;
+        buttonsrcw = button.getWidth() / 2;
+        buttonsrch = button.getHeight();
+        buttondstw = getWidth() / 4;
+        buttondsth = getWidth() / 4;
 
-        buttondstx=getWidth()-buttondstw-32;
-        buttondsty=getHeight()-buttondstw-32;
+        buttondstx = getWidth() - buttondstw - 32;
+        buttondsty = getHeight() - buttondstw - 32;
         //Tilea2
-        tilesrcw=64;
-        tilesrch=64;
-        tilesrcx=0;
-        tilesrcy=0;
-        tiledstw=128;
-        tiledsth=128;
-        tiledstx=0;
-        tiledsty=0;
+        tilesrcw = 64;
+        tilesrch = 64;
+        tilesrcx = 0;
+        tilesrcy = 0;
+        tiledstw = 128;
+        tiledsth = 128;
+        tiledstx = 0;
+        tiledsty = 0;
         //Rock Destination
-        rockset=Utils.loadImage(root,"rock02.png");
-        rocksource=new Rect();
-        rockdestination=new Rect();
+        rockset = Utils.loadImage(root,"rock02.png");
+        rocksource = new Rect();
+        rockdestination = new Rect();
 
         //rockset
         rocksrcx=0;
@@ -114,23 +114,23 @@ public class GameCanvas extends BaseCanvas {
 
     }
     public void setupSpriteSheet(){
-        spritesheet=Utils.loadImage(root,"cowboy.png");
+        spritesheet = Utils.loadImage(root,"cowboy.png");
 
-        spritesource=new Rect();
-        spritedestination=new Rect();
+        spritesource = new Rect();
+        spritedestination = new Rect();
 
         //Spritesheet
-        spritedstx=0;
-        spritedsty=0;
-        spritesrcx=0;
-        spritesrcy=0;
-        spritesrcw=128;
-        spritesrch=128;
-        spritedstw=256;
-        spritedsth=256;
+        spritedstx = 0;
+        spritedsty = 0;
+        spritesrcx = 0;
+        spritesrcy = 0;
+        spritesrcw = 128;
+        spritesrch = 128;
+        spritedstw = 256;
+        spritedsth = 256;
         //sprite hız ve işaret
-        spritevx=spritedstw/16;
-        spritevy=spritedsth/16;
+        spritevx = spritedstw / 16;
+        spritevy = spritedsth / 16;
 
         spriteix=1;
         spriteiy=0;
@@ -150,19 +150,19 @@ public class GameCanvas extends BaseCanvas {
         bulletvy = 0;
         bulletvy = 0;
 
-        bulletdstx=0;
-        bulletdsty=0;
-        bulletdstw=24;
-        bulletdsth=24;
-        bulletcontrol=false;
+        bulletdstx = 0;
+        bulletdsty = 0;
+        bulletdstw = 16;
+        bulletdsth = 16;
+        bulletcontrol = false;
     }
     public void setupAnimation(){
-        yon=3;
-        shotcontrol=0;
+        yon = 3;
+        shotcontrol = 0;
         //Cowboy.png de soldan sağa kaçıncı karede olduğumuz gösterir 0,1,2,....12
-        framenum=0;
+        framenum = 0;
         //Animasyon türü: durma=0,yürüme=1,silah doğrultma=2,ateş etme =3
-        animationtype=1;
+        animationtype = 1;
 
         //animasyon türleri için alt/üst sınır dizisi
         //kare numarası(frameno) bu sınırlar arasında arttıracağız
@@ -170,23 +170,23 @@ public class GameCanvas extends BaseCanvas {
         animationlastframenum=new int[animationtypes];
 
         //durma (0) animasyonu 0.karede başlar & biter.
-        animationfirstfremenum[0]=0;
-        animationlastframenum[0]=0;
+        animationfirstfremenum[0] = 0;
+        animationlastframenum[0] = 0;
         //yürüme(1) animasyonu 1.karede başlar, 8.karede biter.
-        animationfirstfremenum[1]=1;
-        animationlastframenum[1]=8;
+        animationfirstfremenum[1] = 1;
+        animationlastframenum[1] = 8;
 
         //silah çekme(2) animasyonu 9.karede başlar, 11.karede biter.
-        animationfirstfremenum[2]=9;
-        animationlastframenum[2]=11;
+        animationfirstfremenum[2] = 9;
+        animationlastframenum[2] = 11;
         //ateş etme animasyonu 12.karede başlar,13.karede biter.
-        animationfirstfremenum[3]=11;
-        animationlastframenum[3]=13;
+        animationfirstfremenum[3] = 11;
+        animationlastframenum[3] = 13;
 
     }
     public void shoot(){
         //bullet yönetimi
-        bulletcontrol=true;
+        bulletcontrol = true;
 
         bulletvx = 128;
         bulletvy = 128;
@@ -207,13 +207,13 @@ public class GameCanvas extends BaseCanvas {
                 bulletix = 0;
                 bulletiy = 1;
                 bulletdstx = spritedstx + (spritedstw / 4);
-                bulletdsty = spritedsty + (spritedsth / 2);
+                bulletdsty = spritedsty + (spritedsth);
                 break;
             case 5:
                 bulletix = 0;
                 bulletiy = -1;
                 bulletdstx = spritedstx + (spritedstw/2);
-                bulletdsty = spritedsty + (spritedsth/2);
+                bulletdsty = spritedsty + (spritedsth);
                 break;
         }
 
@@ -248,12 +248,12 @@ public class GameCanvas extends BaseCanvas {
             animationtype = 0;
         }else if(spritedsty > getHeight()-spritedsth){
             spritedsty = getHeight()-spritedsth;
-            animationtype =0;
+            animationtype = 0;
         }else if(spritedsty < 0){
             //üst duvarda durur
             spritedsty = 0;
             animationtype = 0;
-        }else if(spritedestination.intersect(rockdestination)){
+        }else if(Utils.checkCollision(spritedestination,rockdestination)){
             animationtype = 0;
             spritedstx -= spritevx*spriteix*2;
             spritedsty -= spritevy*spriteiy*2;
@@ -351,7 +351,7 @@ public class GameCanvas extends BaseCanvas {
         int xfarki = x - touchdownx;
         int yfarki = y - touchdowny;
 
-        if(Math.abs(xfarki) < buttondstw && Math.abs(yfarki) < buttondstw){
+        if(Math.abs(xfarki) < buttondstw/2 && Math.abs(yfarki) < buttondstw/2){
             if(x > getWidth() - buttondstw - 32 && y > getHeight() - buttondsth - 32 && x < getWidth() - 32 && y < getHeight() - 32){
                 shotcontrol = 1;
                 animationtype = 3;

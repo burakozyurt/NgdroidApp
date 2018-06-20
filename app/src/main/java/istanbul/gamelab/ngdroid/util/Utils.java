@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Rect;
 import android.support.v7.app.AlertDialog;
 import android.telephony.TelephonyManager;
 
@@ -34,7 +35,23 @@ public class Utils {
         return image;
     }
 
+    /**
+     * This method checks if two rectangle are colliding or not, then return the result.
+     *
+     * @param rect1 The first rectangle to check the collision
+     * @param rect2 The second rectangle to check the collision
+     * @return A boolean that show if the rectangle are colliding or not
+     */
+    public static boolean checkCollision(Rect rect1, Rect rect2){
+        return checkCollision(rect1.left, rect1.top, rect1.right, rect1.bottom, rect2.left, rect2.top, rect2.right, rect2.bottom);
+    }
+    public static boolean checkCollision(int xLeft1, int yUp1, int xRight1,int yBottom1, int xLeft2, int yUp2, int xRight2, int yBottom2){
+        if(xLeft1 <= xRight2 && xRight1 >= xLeft2 && yBottom1 >= yUp2 && yUp1 <= yBottom2){
+            return true;
+        }
 
+        return false;
+    }
 
     private static String getCountrySim(NgApp ngApp) {
         TelephonyManager tm = (TelephonyManager)ngApp.activity.getSystemService(Context.TELEPHONY_SERVICE);

@@ -21,7 +21,7 @@ public class GameActivity extends BaseActivity {
         setGPRelease(true);
         Log.i(TAG, "Game starting!");
     }
-
+//piksel piksel işlem yapmak için geliştirdikleri sınıf SurfaceView
 
 
 

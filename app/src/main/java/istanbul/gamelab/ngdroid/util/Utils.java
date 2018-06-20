@@ -46,10 +46,9 @@ public class Utils {
         return checkCollision(rect1.left, rect1.top, rect1.right, rect1.bottom, rect2.left, rect2.top, rect2.right, rect2.bottom);
     }
     public static boolean checkCollision(int xLeft1, int yUp1, int xRight1,int yBottom1, int xLeft2, int yUp2, int xRight2, int yBottom2){
-        if(xLeft1 <= xRight2 && xRight1 >= xLeft2 && yBottom1 >= yUp2 && yUp1 <= yBottom2){
+        if(xLeft1 < xRight2 && xRight1 > xLeft2 && yBottom1 > yUp2 && yUp1 < yBottom2){
             return true;
         }
-
         return false;
     }
 

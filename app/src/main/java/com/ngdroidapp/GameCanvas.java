@@ -16,9 +16,15 @@ package com.ngdroidapp;
 
 
 public class GameCanvas extends BaseCanvas {
-    private Bitmap tileset, spritesheet, rockset, button, bullet;//Zemin resmimiz,Kovboyumuz,Butonumuz
+    private Bitmap tileset, spritesheet, rockset, button, bullet, enemy, reloadbutton;//Zemin resmimiz,Kovboyumuz,Butonumuz
     private Rect tilesource, tiledestination, spritesource, spritedestination, rocksource, rockdestination, buttonsource, buttondestination,
-            bulletsource, bulletdestination;
+            bulletsource, bulletdestination, enemysource, enemydestination,reloadsource, reloaddestination;
+    //enemy source genişlik yükseklijk, enemydestination,genişlik,yükseklik
+    private int enemysrcw, enemysrch, enemydstw, enemydsth;
+    private int enemysrcx, enemysrcy, enemydstx, enemydsty;
+    //reload button genişlik yükseklik reload destination genişlik yükseklik
+    private int reloadsrcw, reloadsrch, reloaddstw, reloaddsth;
+    private int reloadsrcx, reloadsrcy, reloaddstx, reloaddsty;
 
     //tilesource genişlik,yükseklik, tiledestination,genişlik,yükseklik
     private int tilesrcw, tilesrch, tiledstw, tiledsth;
@@ -56,7 +62,7 @@ public class GameCanvas extends BaseCanvas {
     //ekrana do
 
     //ateş kontrolü
-    public boolean bulletcontrol;
+    public boolean bulletcontrol, enemycontrol, spritesheetcontrol, reloadcontrol;
 
 
     public GameCanvas(NgApp ngApp) {
@@ -66,16 +72,36 @@ public class GameCanvas extends BaseCanvas {
     public void setup() {
         Log.i(TAG, "setup");
         setupTile();
+        setupEnemy();
         setupSpriteSheet();
         setupAnimation();
         setupBullet();
+        setupReloadButton();
     }
-    public void setupTile(){
-        tileset = Utils.loadImage(root,"tilea2.png");
+    public void setupReloadButton(){
+        reloadbutton = Utils.loadImage(root,"reload.png");
+        reloadsource = new Rect();
+        reloaddestination = new Rect();
+        reloadcontrol = false;
+
+        reloadsrcx = 0;
+        reloadsrcy = 0;
+        reloadsrcw = reloadbutton.getWidth();
+        reloadsrch = reloadbutton.getHeight();
+
+        reloaddstw = 196;
+        reloaddsth = 196;
+
+        reloaddstx = getWidth() / 2 - reloaddstw / 2;
+        reloaddsty = getHeight() -reloaddsth -32;
+
+    }
+    public void setupTile() {
+        tileset = Utils.loadImage(root, "tilea2.png");
         tilesource = new Rect();
         tiledestination = new Rect();
         //buttonset
-        button=Utils.loadImage(root,"buttonpush.png");
+        button = Utils.loadImage(root, "buttonpush.png");
         buttonsource = new Rect();
         buttondestination = new Rect();
         buttonsrcx = 0;
@@ -97,28 +123,28 @@ public class GameCanvas extends BaseCanvas {
         tiledstx = 0;
         tiledsty = 0;
         //Rock Destination
-        rockset = Utils.loadImage(root,"rock02.png");
+        rockset = Utils.loadImage(root, "rock02.png");
         rocksource = new Rect();
         rockdestination = new Rect();
 
         //rockset
-        rocksrcx=0;
-        rocksrcy=0;
-        rocksrcw=rockset.getWidth();
-        rocksrch=rockset.getHeight();
-        rockdstw=128;
-        rockdsth=128;
-        rockdstx=getWidth()/2-rockdstw/2;
-        rockdsty=getHeight()/2-rockdsth/2;
+        rocksrcx = 0;
+        rocksrcy = 0;
+        rocksrcw = rockset.getWidth();
+        rocksrch = rockset.getHeight();
+        rockdstw = 128;
+        rockdsth = 128;
+        rockdstx = getWidth() / 2 - rockdstw / 2;
+        rockdsty = getHeight() / 2 - rockdsth / 2;
 
 
     }
-    public void setupSpriteSheet(){
-        spritesheet = Utils.loadImage(root,"cowboy.png");
 
+    public void setupSpriteSheet() {
+        spritesheet = Utils.loadImage(root, "cowboy.png");
         spritesource = new Rect();
         spritedestination = new Rect();
-
+        spritesheetcontrol = true;
         //Spritesheet
         spritedstx = 0;
         spritedsty = 0;
@@ -132,12 +158,13 @@ public class GameCanvas extends BaseCanvas {
         spritevx = spritedstw / 16;
         spritevy = spritedsth / 16;
 
-        spriteix=1;
-        spriteiy=0;
+        spriteix = 1;
+        spriteiy = 0;
 
     }
-    public void setupBullet(){
-        bullet = Utils.loadImage(root,"bullet.png");
+
+    public void setupBullet() {
+        bullet = Utils.loadImage(root, "bullet.png");
         bulletsource = new Rect();
         bulletdestination = new Rect();
         bulletsrcx = 0;
@@ -156,7 +183,8 @@ public class GameCanvas extends BaseCanvas {
         bulletdsth = 16;
         bulletcontrol = false;
     }
-    public void setupAnimation(){
+
+    public void setupAnimation() {
         yon = 3;
         shotcontrol = 0;
         //Cowboy.png de soldan sağa kaçıncı karede olduğumuz gösterir 0,1,2,....12
@@ -166,8 +194,8 @@ public class GameCanvas extends BaseCanvas {
 
         //animasyon türleri için alt/üst sınır dizisi
         //kare numarası(frameno) bu sınırlar arasında arttıracağız
-        animationfirstfremenum=new int[animationtypes];
-        animationlastframenum=new int[animationtypes];
+        animationfirstfremenum = new int[animationtypes];
+        animationlastframenum = new int[animationtypes];
 
         //durma (0) animasyonu 0.karede başlar & biter.
         animationfirstfremenum[0] = 0;
@@ -184,13 +212,34 @@ public class GameCanvas extends BaseCanvas {
         animationlastframenum[3] = 13;
 
     }
-    public void shoot(){
+
+    public void setupEnemy() {
+        //Enemy Set
+        enemycontrol = true;
+        enemy = Utils.loadImage(root, "enemyufo.png");
+        enemysource = new Rect();
+        enemydestination = new Rect();
+
+        enemysrcx = 0;
+        enemysrcw = enemy.getWidth();
+        enemysrcy = 0;
+        enemysrch = enemy.getHeight();
+
+        enemydstw = 128;
+        enemydsth = 128;
+        enemydstx = getWidth() / 2 - (enemydstw / 2);
+        enemydsty = getHeight() / 2 + (enemydsth);
+
+
+    }
+
+    public void shoot() {
         //bullet yönetimi
         bulletcontrol = true;
 
-        bulletvx = 128;
-        bulletvy = 128;
-        switch (yon){
+        bulletvx = 160;
+        bulletvy = 160;
+        switch (yon) {
             case 3:
                 bulletix = 1;
                 bulletiy = 0;
@@ -199,7 +248,7 @@ public class GameCanvas extends BaseCanvas {
                 break;
             case 7:
                 bulletix = -1;
-                bulletiy =  0;
+                bulletiy = 0;
                 bulletdstx = spritedstx + (spritedstw / 2);
                 bulletdsty = spritedsty + (spritedsth / 2);
                 break;
@@ -212,12 +261,13 @@ public class GameCanvas extends BaseCanvas {
             case 5:
                 bulletix = 0;
                 bulletiy = -1;
-                bulletdstx = spritedstx + (spritedstw/2);
+                bulletdstx = spritedstx + (spritedstw / 2);
                 bulletdsty = spritedsty + (spritedsth);
                 break;
         }
 
     }
+
     public void update() {
         bulletdstx += bulletvx * bulletix;
         bulletdsty += bulletvy * bulletiy;
@@ -226,40 +276,58 @@ public class GameCanvas extends BaseCanvas {
         spritedsty += spritevy * spriteiy;
         framenum++;
 
-        if (bulletcontrol == true){
-            if(bulletdstx > getWidth() + 64 || bulletdstx < -96 || bulletdsty > getHeight() + 64 || bulletdsty < -96){
-                bulletcontrol=false;
-                Log.i("Control",""+bulletdstx);
+        if (bulletcontrol == true) {
+            if (bulletdstx > getWidth() + 64 || bulletdstx < -96 || bulletdsty > getHeight() + 64 || bulletdsty < -96) {
+                bulletcontrol = false;
+                Log.i("Control", "" + bulletdstx);
             }
+            if (Utils.checkCollision(bulletdestination, enemydestination)) {
+                bulletcontrol = false;
+                enemycontrol = false;
+                reloadcontrol = true;
+            }
+
         }
-        if (framenum > animationlastframenum[animationtype]){
+        if (framenum > animationlastframenum[animationtype]) {
             framenum = animationfirstfremenum[animationtype];
-            if(shotcontrol == 1){
+            if (shotcontrol == 1) {
                 animationtype = 0;
                 shotcontrol = 0;
             }
         }
-        if (spritedstx > getWidth() - spritedstw){
+        if (spritedstx > getWidth() - spritedstw) {
             spritedstx = getWidth() - spritedstw;
             animationtype = 0;
-        }else if(spritedstx < 0){
+        } else if (spritedstx < 0) {
             //sol duvarda durur
             spritedstx = 0;
             animationtype = 0;
-        }else if(spritedsty > getHeight()-spritedsth){
-            spritedsty = getHeight()-spritedsth;
+        } else if (spritedsty > getHeight() - spritedsth) {
+            spritedsty = getHeight() - spritedsth;
             animationtype = 0;
-        }else if(spritedsty < 0){
+        } else if (spritedsty < 0) {
             //üst duvarda durur
             spritedsty = 0;
             animationtype = 0;
-        }else if(Utils.checkCollision(spritedestination,rockdestination)){
+        }
+
+        if (Utils.checkCollision(spritedestination, rockdestination)) {
             animationtype = 0;
-            spritedstx -= spritevx*spriteix*2;
-            spritedsty -= spritevy*spriteiy*2;
-            spritevy=0;
-            spritevx=0;
-            Log.i(TAG,"Collusion Detected");
+            spritedstx -= spritevx * spriteix * 2;
+            spritedsty -= spritevy * spriteiy * 2;
+            spritevy = 0;
+            spritevx = 0;
+            Log.i(TAG, "Collusion Detected Rock/SpriteSheet");
+        }
+        if (Utils.checkCollision(spritedestination, enemydestination)) {
+            animationtype = 0;
+            spritedstx -= spritevx * spriteix * 2;
+            spritedsty -= spritevy * spriteiy * 2;
+            spritevy = 0;
+            spritevx = 0;
+            spritesheetcontrol = false;
+            reloadcontrol = true;
+            Log.i(TAG, "Collusion Detected Enemy/SpriteSheet");
         }
 
         //cowboy.png'deki animasyon karesinin koordinatını framenum ve genişlik cinsinden girelim
@@ -276,10 +344,16 @@ public class GameCanvas extends BaseCanvas {
                 canvas.drawBitmap(tileset, tilesource, tiledestination,null);
             }
         }
-
-        spritesource.set(spritesrcx, spritesrcy, spritesrcx + spritesrcw, spritesrcy + spritesrch);
-        spritedestination.set(spritedstx, spritedsty, spritedstx + spritedstw, spritedsty + spritedsth);
-        canvas.drawBitmap(spritesheet, spritesource, spritedestination,null);
+        if (enemycontrol) {
+            enemysource.set(enemysrcx, enemysrcy, enemysrcx + enemysrcw, enemysrcy + enemysrch);
+            enemydestination.set(enemydstx, enemydsty, enemydstx + enemydstw, enemydsty + enemydsth);
+            canvas.drawBitmap(enemy, enemysource, enemydestination, null);
+        }
+        if(spritesheetcontrol == true) {
+            spritesource.set(spritesrcx, spritesrcy, spritesrcx + spritesrcw, spritesrcy + spritesrch);
+            spritedestination.set(spritedstx, spritedsty, spritedstx + spritedstw, spritedsty + spritedsth);
+            canvas.drawBitmap(spritesheet, spritesource, spritedestination, null);
+        }
 
         rocksource.set(rocksrcx, rocksrcy, rocksrcx + rocksrcw, rocksrcy+rocksrch);
         rockdestination.set(rockdstx, rockdsty, rockdstx+rockdstw, rockdsty+rockdsth);
@@ -288,6 +362,12 @@ public class GameCanvas extends BaseCanvas {
         buttonsource.set(buttonsrcx, buttonsrcy, buttonsrcx + buttonsrcw, buttonsrch);
         buttondestination.set(buttondstx, buttondsty, buttondstx+buttondstw, buttondsty + buttondsth);
         canvas.drawBitmap(button, buttonsource, buttondestination,null);
+
+        if (reloadcontrol == true){
+            reloadsource.set(reloadsrcx, reloadsrcy, reloadsrcx + reloadsrcw, reloadsrcy + reloadsrch);
+            reloaddestination.set(reloaddstx, reloaddsty, reloaddstx + reloaddstw, reloaddsty + reloaddsth);
+            canvas.drawBitmap(reloadbutton, reloadsource, reloaddestination, null);
+        }
 
         if(bulletcontrol == true){
             Log.i("Control","Cizdiriliyor Kurşun"+bulletdstx);
@@ -362,6 +442,13 @@ public class GameCanvas extends BaseCanvas {
                 if(bulletcontrol == false){
                     shoot();
                 }
+            }
+            else if(x > getWidth()/2 - reloaddstw / 2 && y > getHeight() - 32 - reloaddsth && x < getWidth() / 2 && y < getHeight() -32 ){
+                if(enemycontrol == false){
+                    enemycontrol =true;
+                }
+                if(spritesheetcontrol==false)spritesheetcontrol=true;
+                reloadcontrol = false;
             }
         }else {
         //x farki büyükse sağa/sola, y farki büyükse yukarı/aşağı gitsin

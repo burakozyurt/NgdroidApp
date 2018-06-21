@@ -236,8 +236,8 @@ public class GameCanvas extends BaseCanvas {
         enemydstx = getWidth() / 2 - (enemydstw / 2);
         enemydsty = getHeight() / 2 + (enemydsth);
 
-        enemyvx = enemydstw / 16;
-        enemyvy = enemydsth / 16;
+        enemyvx = enemydstw / 8;
+        enemyvy = enemydsth / 8;
 
         enemyix = 1;
         enemyiy = 0;
@@ -284,6 +284,7 @@ public class GameCanvas extends BaseCanvas {
         bulletdsty += bulletvy * bulletiy;
 
         enemydstx += enemyvx * enemyix;
+        enemydsty += enemyvy * enemyiy;
 
         spritedstx += spritevx * spriteix;
         spritedsty += spritevy * spriteiy;
@@ -307,6 +308,13 @@ public class GameCanvas extends BaseCanvas {
                 animationtype = 0;
                 shotcontrol = 0;
             }
+        }
+
+        if (enemydstx > getWidth() - enemydstw){
+            enemyix = -1;
+        }
+        else if(enemydstx < 0){
+            enemyix = 1;
         }
         if (spritedstx > getWidth() - spritedstw) {
             spritedstx = getWidth() - spritedstw;
@@ -456,12 +464,20 @@ public class GameCanvas extends BaseCanvas {
                     shoot();
                 }
             }
-            else if(x > getWidth()/2 - reloaddstw / 2 && y > getHeight() - 32 - reloaddsth && x < getWidth() / 2 && y < getHeight() -32 ){
-                if(enemycontrol == false){
-                    enemycontrol =true;
+            else if(x > getWidth()/2 - reloaddstw / 2 && y > getHeight() - 32 - reloaddsth && x < getWidth() / 2 +reloaddstw / 2 && y < getHeight() -32 ){
+                Log.i("Reload Control","Reload Clicked");
+                if(!enemycontrol){
+                    enemycontrol = true;
+                    reloadcontrol = false;
                 }
-                if(spritesheetcontrol==false)spritesheetcontrol=true;
-                reloadcontrol = false;
+                if(!spritesheetcontrol){
+                    spritesheetcontrol=true;
+                    spritedstx = 0;
+                    spritedsty = 0;
+                    spriteix = 0;
+                    spriteiy = 0;
+                    reloadcontrol = false;
+                }
             }
         }else {
         //x farki büyükse sağa/sola, y farki büyükse yukarı/aşağı gitsin

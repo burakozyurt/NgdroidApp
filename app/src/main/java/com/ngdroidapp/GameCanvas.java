@@ -5,7 +5,10 @@ package com.ngdroidapp;
         import android.graphics.Rect;
 
 
+        import java.util.logging.Handler;
+
         import istanbul.gamelab.ngdroid.base.BaseCanvas;
+        import istanbul.gamelab.ngdroid.core.MainThread;
         import istanbul.gamelab.ngdroid.util.Log;
         import istanbul.gamelab.ngdroid.util.Utils;
 
@@ -22,6 +25,8 @@ public class GameCanvas extends BaseCanvas {
     //enemy source genişlik yükseklijk, enemydestination,genişlik,yükseklik
     private int enemysrcw, enemysrch, enemydstw, enemydsth;
     private int enemysrcx, enemysrcy, enemydstx, enemydsty;
+    //enemy hız x/y enemy işaret x/y
+    private int enemyvx, enemyvy, enemyix, enemyiy;
     //reload button genişlik yükseklik reload destination genişlik yükseklik
     private int reloadsrcw, reloadsrch, reloaddstw, reloaddsth;
     private int reloadsrcx, reloadsrcy, reloaddstx, reloaddsty;
@@ -77,6 +82,7 @@ public class GameCanvas extends BaseCanvas {
         setupAnimation();
         setupBullet();
         setupReloadButton();
+
     }
     public void setupReloadButton(){
         reloadbutton = Utils.loadImage(root,"reload.png");
@@ -230,6 +236,11 @@ public class GameCanvas extends BaseCanvas {
         enemydstx = getWidth() / 2 - (enemydstw / 2);
         enemydsty = getHeight() / 2 + (enemydsth);
 
+        enemyvx = enemydstw / 16;
+        enemyvy = enemydsth / 16;
+
+        enemyix = 1;
+        enemyiy = 0;
 
     }
 
@@ -271,6 +282,8 @@ public class GameCanvas extends BaseCanvas {
     public void update() {
         bulletdstx += bulletvx * bulletix;
         bulletdsty += bulletvy * bulletiy;
+
+        enemydstx += enemyvx * enemyix;
 
         spritedstx += spritevx * spriteix;
         spritedsty += spritevy * spriteiy;
@@ -349,7 +362,7 @@ public class GameCanvas extends BaseCanvas {
             enemydestination.set(enemydstx, enemydsty, enemydstx + enemydstw, enemydsty + enemydsth);
             canvas.drawBitmap(enemy, enemysource, enemydestination, null);
         }
-        if(spritesheetcontrol == true) {
+        if(spritesheetcontrol) {
             spritesource.set(spritesrcx, spritesrcy, spritesrcx + spritesrcw, spritesrcy + spritesrch);
             spritedestination.set(spritedstx, spritedsty, spritedstx + spritedstw, spritedsty + spritedsth);
             canvas.drawBitmap(spritesheet, spritesource, spritedestination, null);
@@ -363,13 +376,13 @@ public class GameCanvas extends BaseCanvas {
         buttondestination.set(buttondstx, buttondsty, buttondstx+buttondstw, buttondsty + buttondsth);
         canvas.drawBitmap(button, buttonsource, buttondestination,null);
 
-        if (reloadcontrol == true){
+        if (reloadcontrol){
             reloadsource.set(reloadsrcx, reloadsrcy, reloadsrcx + reloadsrcw, reloadsrcy + reloadsrch);
             reloaddestination.set(reloaddstx, reloaddsty, reloaddstx + reloaddstw, reloaddsty + reloaddsth);
             canvas.drawBitmap(reloadbutton, reloadsource, reloaddestination, null);
         }
 
-        if(bulletcontrol == true){
+        if(bulletcontrol){
             Log.i("Control","Cizdiriliyor Kurşun"+bulletdstx);
             bulletsource.set(bulletsrcx, bulletsrcy, bulletsrcx + bulletsrcw, bulletsrcy + bulletsrch);
             bulletdestination.set(bulletdstx, bulletdsty, bulletdstx + bulletdstw, bulletdsty + bulletdsth);

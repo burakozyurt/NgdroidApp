@@ -341,13 +341,14 @@ public class GameCanvas extends BaseCanvas {
             if(Utils.checkCollision(bulletdestination,rockdestination)){
                 bulletcontrol = false;
             }else if (Utils.checkCollision(bulletdestination, enemydestination)) {
-                bulletcontrol = false;
-                enemycontrol = false;
-                reloadcontrol = true;
-                enemyix = 0;
-                explosionframenumx = 0;
-                explosionframenumy = 0;
-                explosioncontrol = true;
+                    bulletcontrol = false;
+                    enemycontrol = false;
+                    reloadcontrol = true;
+                    enemyix = 0;
+                    explosionframenumx = 0;
+                    explosionframenumy = 0;
+                    explosioncontrol = true;
+
             }else if (bulletdstx > getWidth() + 64 || bulletdstx < -96 || bulletdsty > getHeight() + 64 || bulletdsty < -96) {
                 bulletcontrol = false;
                 Log.i("Control", "" + bulletdstx);
@@ -394,6 +395,7 @@ public class GameCanvas extends BaseCanvas {
             spritevx = 0;
             Log.i(TAG, "Collusion Detected Rock/SpriteSheet");
         }
+        if(enemycontrol){
         if (Utils.checkCollision(spritedestination, enemydestination)) {
             animationtype = 0;
             spritedstx -= spritevx * spriteix * 2;
@@ -403,6 +405,7 @@ public class GameCanvas extends BaseCanvas {
             spritesheetcontrol = false;
             reloadcontrol = true;
             Log.i(TAG, "Collusion Detected Enemy/SpriteSheet");
+        }
         }
 
         //cowboy.png'deki animasyon karesinin koordinatını framenum ve genişlik cinsinden girelim
@@ -433,9 +436,9 @@ public class GameCanvas extends BaseCanvas {
             canvas.drawBitmap(enemy, enemysource, enemydestination, null);
         }
         if(explosioncontrol){
-           explosionsource.set(explosionsrcx, explosionsrcy, explosionsrcw + explosionsrcx, explosionsrcy + explosionsrch);
-           explosiondestination.set(enemydstx - enemydstw / 2 , enemydsty - enemydsth / 2 , enemydstx + explosiondstx / 2, enemydsty + explosiondsth);
-           canvas.drawBitmap(explosion, explosionsource, explosiondestination, null);
+                explosionsource.set(explosionsrcx, explosionsrcy, explosionsrcw + explosionsrcx, explosionsrcy + explosionsrch);
+                explosiondestination.set(enemydstx - enemydstw / 2, enemydsty - enemydsth / 2, enemydstx + explosiondstx / 2, enemydsty + explosiondsth);
+                canvas.drawBitmap(explosion, explosionsource, explosiondestination, null);
         }
         if(spritesheetcontrol) {
             spritesource.set(spritesrcx, spritesrcy, spritesrcx + spritesrcw, spritesrcy + spritesrch);

@@ -10,6 +10,7 @@ package com.ngdroidapp;
 
         import com.mycompany.myngdroidapp.GameActivity;
 
+        import java.util.Random;
         import java.util.logging.Handler;
 
         import istanbul.gamelab.ngdroid.base.BaseCanvas;
@@ -27,7 +28,8 @@ public class GameCanvas extends BaseCanvas {
     private Bitmap tileset, spritesheet, rockset, button, bullet, enemy, reloadbutton, explosion;//Zemin resmimiz,Kovboyumuz,Butonumuz
     private Rect tilesource, tiledestination, spritesource, spritedestination, rocksource, rockdestination, buttonsource, buttondestination,
             bulletsource, bulletdestination, enemysource, enemydestination,reloadsource, reloaddestination, explosionsource, explosiondestination;
-
+    //Random metodu
+    Random newRandom;
     //explosionsource genişlik, yükseklik, explosiondestination, genişlik, yükseklik
     private int explosionsrcw, explosionsrch, explosiondstw, explosiondsth;
     private int explosionsrcx, explosionsrcy, explosiondstx, explosiondsty;
@@ -123,6 +125,7 @@ public class GameCanvas extends BaseCanvas {
         paint.setTextSize(32);
     }
     public void setupReloadButton(){
+        newRandom=new Random();
         reloadbutton = Utils.loadImage(root,"reload.png");
         reloadsource = new Rect();
         reloaddestination = new Rect();
@@ -259,6 +262,7 @@ public class GameCanvas extends BaseCanvas {
 
     public void setupEnemy() {
         //Enemy Set
+
         enemycontrol = true;
         enemy = Utils.loadImage(root, "enemyufo.png");
         enemysource = new Rect();
@@ -331,23 +335,25 @@ public class GameCanvas extends BaseCanvas {
         if (explosionframenumx > 4){
             explosionframenumx = 0;
             explosionframenumy++;
-            if(explosionframenumy > 4) {
-                explosionframenumy = 0;
-                explosioncontrol = false;
+        if(explosionframenumy > 4) {
+            explosionframenumy = 0;
+            explosioncontrol = false;
             }
         }
-        if (bulletcontrol == true) {
+
+        if (bulletcontrol) {
             if(Utils.checkCollision(bulletdestination,rockdestination)){
                 bulletcontrol = false;
             }else if (Utils.checkCollision(bulletdestination, enemydestination)) {
-                    bulletcontrol = false;
-                    enemycontrol = false;
-                    reloadcontrol = true;
-                    enemyix = 0;
-                    explosionframenumx = 0;
-                    explosionframenumy = 0;
-                    explosioncontrol = true;
-
+                    if(enemycontrol) {
+                        bulletcontrol = false;
+                        enemycontrol = false;
+                        reloadcontrol = true;
+                        enemyix = 0;
+                        explosionframenumx = 0;
+                        explosionframenumy = 0;
+                        explosioncontrol = true;
+                    }
             }else if (bulletdstx > getWidth() + 64 || bulletdstx < -96 || bulletdsty > getHeight() + 64 || bulletdsty < -96) {
                 bulletcontrol = false;
                 Log.i("Control", "" + bulletdstx);
@@ -436,7 +442,7 @@ public class GameCanvas extends BaseCanvas {
         }
         if(explosioncontrol){
                 explosionsource.set(explosionsrcx, explosionsrcy, explosionsrcw + explosionsrcx, explosionsrcy + explosionsrch);
-                explosiondestination.set(enemydstx - enemydstw / 2, enemydsty - enemydsth / 2, enemydstx + explosiondstx / 2, enemydsty + explosiondsth);
+                explosiondestination.set(enemydstx - enemydstw / 2, enemydsty - enemydsth / 2, enemydstx + explosiondstw, enemydsty + explosiondsth);
                 canvas.drawBitmap(explosion, explosionsource, explosiondestination, null);
                 canvas.drawText("Explosion Detected ",10, 112,paint);
         }
@@ -458,7 +464,7 @@ public class GameCanvas extends BaseCanvas {
             reloadsource.set(reloadsrcx, reloadsrcy, reloadsrcx + reloadsrcw, reloadsrcy + reloadsrch);
             reloaddestination.set(reloaddstx, reloaddsty, reloaddstx + reloaddstw, reloaddsty + reloaddsth);
             canvas.drawBitmap(reloadbutton, reloadsource, reloaddestination, null);
-            if(explosioncontrol == false)canvas.drawText("Reload",10, 112,paint);
+            if(!explosioncontrol)canvas.drawText("Reload",10, 112,paint);
             else canvas.drawText("Reload ",10, 144,paint);
 
         }
@@ -534,7 +540,7 @@ public class GameCanvas extends BaseCanvas {
                 spritevx = 0;
                 framenum = 11;
                 buttonsrcx = 0;
-                if(bulletcontrol == false){
+                if(!bulletcontrol){
                     shoot();
                 }
             }
@@ -545,6 +551,7 @@ public class GameCanvas extends BaseCanvas {
                     reloadcontrol = false;
                     enemyix = 1;
                     explosioncontrol = false;
+                    enemydsty = newRandom.nextInt(getHeight() - enemydsth);
                 }
                 if(!spritesheetcontrol){
                     spritesheetcontrol=true;
@@ -552,7 +559,6 @@ public class GameCanvas extends BaseCanvas {
                     spritedsty = 0;
                     spriteix = 0;
                     spriteiy = 0;
-
                     reloadcontrol = false;
                 }
             }

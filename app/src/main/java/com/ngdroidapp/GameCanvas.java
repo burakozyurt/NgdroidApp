@@ -2,8 +2,13 @@ package com.ngdroidapp;
 
         import android.graphics.Bitmap;
         import android.graphics.Canvas;
+        import android.graphics.Color;
+        import android.graphics.Paint;
         import android.graphics.Rect;
+        import android.widget.Toast;
 
+
+        import com.mycompany.myngdroidapp.GameActivity;
 
         import java.util.logging.Handler;
 
@@ -19,10 +24,15 @@ package com.ngdroidapp;
 
 
 public class GameCanvas extends BaseCanvas {
-    private Bitmap tileset, spritesheet, rockset, button, bullet, enemy, reloadbutton;//Zemin resmimiz,Kovboyumuz,Butonumuz
+    private Bitmap tileset, spritesheet, rockset, button, bullet, enemy, reloadbutton, explosion;//Zemin resmimiz,Kovboyumuz,Butonumuz
     private Rect tilesource, tiledestination, spritesource, spritedestination, rocksource, rockdestination, buttonsource, buttondestination,
-            bulletsource, bulletdestination, enemysource, enemydestination,reloadsource, reloaddestination;
-    //enemy source genişlik yükseklijk, enemydestination,genişlik,yükseklik
+            bulletsource, bulletdestination, enemysource, enemydestination,reloadsource, reloaddestination, explosionsource, explosiondestination;
+
+    //explosionsource genişlik, yükseklik, explosiondestination, genişlik, yükseklik
+    private int explosionsrcw, explosionsrch, explosiondstw, explosiondsth;
+    private int explosionsrcx, explosionsrcy, explosiondstx, explosiondsty;
+
+    //enemy source genişlik yükseklik, enemydestination,genişlik,yükseklik
     private int enemysrcw, enemysrch, enemydstw, enemydsth;
     private int enemysrcx, enemysrcy, enemydstx, enemydsty;
     //enemy hız x/y enemy işaret x/y
@@ -37,7 +47,6 @@ public class GameCanvas extends BaseCanvas {
     //button source genişlik yükseklik,buttondestination,genişlik,yükseklik
     private int buttonsrcw, buttonsrch, buttondstw, buttondsth;
     private int buttonsrcx, buttonsrcy, buttondstx, buttondsty;
-
     //bulletsource genişlik,yükseklik, bulletdestination genişlik,yükseklik
     private int bulletsrcw, bulletsrch, bulletdstw, bulletdsth;
     private int bulletsrcx, bulletsrcy, bulletdstx, bulletdsty;
@@ -59,6 +68,9 @@ public class GameCanvas extends BaseCanvas {
     //Yön belirteci
     private int yon, shotcontrol;
 
+    //Explosion kare numarası x karenumarası y
+    private int explosionframenumx,explosionframenumy;
+
     //Animasyon türleri:durma,yürüme,silah doğrultma,ateş etme
     private int animationtypes = 4;
 
@@ -67,8 +79,9 @@ public class GameCanvas extends BaseCanvas {
     //ekrana do
 
     //ateş kontrolü
-    public boolean bulletcontrol, enemycontrol, spritesheetcontrol, reloadcontrol;
-
+    public boolean bulletcontrol, enemycontrol, spritesheetcontrol, reloadcontrol,explosioncontrol;
+    //DrawText için kullanılıyor.
+    private Paint paint;
 
     public GameCanvas(NgApp ngApp) {
         super(ngApp);
@@ -82,7 +95,32 @@ public class GameCanvas extends BaseCanvas {
         setupAnimation();
         setupBullet();
         setupReloadButton();
+        setupText();
+        setupExplosion();
+    }
 
+    public void setupExplosion(){
+        explosion = Utils.loadImage(root,"explosion2.png");
+        explosionsource = new Rect();
+        explosiondestination = new Rect();
+        explosioncontrol = false;
+        explosionsrcx = 0;
+        explosionsrcy = 0;
+        explosionsrcw = 128;
+        explosionsrch = 128;
+
+        explosiondstx = enemydstx;
+        explosiondsty = enemydsty;
+        explosiondstw = 128;
+        explosiondsth = 128;
+
+
+    }
+
+    public void setupText(){
+        paint = new Paint();
+        paint.setColor(Color.BLACK);
+        paint.setTextSize(32);
     }
     public void setupReloadButton(){
         reloadbutton = Utils.loadImage(root,"reload.png");
@@ -289,17 +327,33 @@ public class GameCanvas extends BaseCanvas {
         spritedstx += spritevx * spriteix;
         spritedsty += spritevy * spriteiy;
         framenum++;
+        explosionframenumx++;
+        if (explosionframenumx > 4){
+            explosionframenumx = 0;
+            explosionframenumy++;
+            if(explosionframenumy > 4) {
+                explosionframenumy = 0;
+                explosioncontrol = false;
+            }
+        }
 
         if (bulletcontrol == true) {
-            if (bulletdstx > getWidth() + 64 || bulletdstx < -96 || bulletdsty > getHeight() + 64 || bulletdsty < -96) {
+            if(Utils.checkCollision(bulletdestination,rockdestination)){
                 bulletcontrol = false;
-                Log.i("Control", "" + bulletdstx);
-            }
-            if (Utils.checkCollision(bulletdestination, enemydestination)) {
+            }else if (Utils.checkCollision(bulletdestination, enemydestination)) {
                 bulletcontrol = false;
                 enemycontrol = false;
                 reloadcontrol = true;
+                enemyix = 0;
+                explosionframenumx = 0;
+                explosionframenumy = 0;
+                explosioncontrol = true;
+            }else if (bulletdstx > getWidth() + 64 || bulletdstx < -96 || bulletdsty > getHeight() + 64 || bulletdsty < -96) {
+                bulletcontrol = false;
+                Log.i("Control", "" + bulletdstx);
             }
+
+
 
         }
         if (framenum > animationlastframenum[animationtype]) {
@@ -313,7 +367,7 @@ public class GameCanvas extends BaseCanvas {
         if (enemydstx > getWidth() - enemydstw){
             enemyix = -1;
         }
-        else if(enemydstx < 0){
+        else if(enemydstx < 0) {
             enemyix = 1;
         }
         if (spritedstx > getWidth() - spritedstw) {
@@ -355,6 +409,10 @@ public class GameCanvas extends BaseCanvas {
         spritesrcx = framenum * spritesrcw;
         spritesrcy = yon * spritesrch;
 
+
+
+        explosionsrcx = explosionframenumx * explosionsrcw;
+        explosionsrcy = explosionframenumy * explosionsrch;
     }
 
     public void draw(Canvas canvas) {
@@ -363,12 +421,21 @@ public class GameCanvas extends BaseCanvas {
                 tilesource.set(tilesrcx, tilesrcy ,tilesrcx + tilesrcw, tilesrcy + tilesrch);
                 tiledestination.set(i, j, i + tiledstw, j+tiledsth);
                 canvas.drawBitmap(tileset, tilesource, tiledestination,null);
+
             }
         }
+
+        canvas.drawText("Cowboy x: " + spritedsty + spritedsth / 2, 10, 48, paint);
+        canvas.drawText("Cowboy y: " + spritedstx + spritedstw / 2 ,10, 80,paint);
         if (enemycontrol) {
             enemysource.set(enemysrcx, enemysrcy, enemysrcx + enemysrcw, enemysrcy + enemysrch);
             enemydestination.set(enemydstx, enemydsty, enemydstx + enemydstw, enemydsty + enemydsth);
             canvas.drawBitmap(enemy, enemysource, enemydestination, null);
+        }
+        if(explosioncontrol){
+           explosionsource.set(explosionsrcx, explosionsrcy, explosionsrcw + explosionsrcx, explosionsrcy + explosionsrch);
+           explosiondestination.set(enemydstx - enemydstw / 2 , enemydsty - enemydsth / 2 , enemydstx + explosiondstx / 2, enemydsty + explosiondsth);
+           canvas.drawBitmap(explosion, explosionsource, explosiondestination, null);
         }
         if(spritesheetcontrol) {
             spritesource.set(spritesrcx, spritesrcy, spritesrcx + spritesrcw, spritesrcy + spritesrch);
@@ -391,11 +458,12 @@ public class GameCanvas extends BaseCanvas {
         }
 
         if(bulletcontrol){
-            Log.i("Control","Cizdiriliyor Kurşun"+bulletdstx);
+            Log.i("Control","Cizdiriliyor Kurşun" + bulletdstx);
             bulletsource.set(bulletsrcx, bulletsrcy, bulletsrcx + bulletsrcw, bulletsrcy + bulletsrch);
             bulletdestination.set(bulletdstx, bulletdsty, bulletdstx + bulletdstw, bulletdsty + bulletdsth);
             canvas.drawBitmap(bullet, bulletsource, bulletdestination,null);
         }
+
     }
 
     public void keyPressed(int key) {
@@ -469,6 +537,8 @@ public class GameCanvas extends BaseCanvas {
                 if(!enemycontrol){
                     enemycontrol = true;
                     reloadcontrol = false;
+                    enemyix = 1;
+                    explosioncontrol = false;
                 }
                 if(!spritesheetcontrol){
                     spritesheetcontrol=true;
@@ -476,6 +546,7 @@ public class GameCanvas extends BaseCanvas {
                     spritedsty = 0;
                     spriteix = 0;
                     spriteiy = 0;
+
                     reloadcontrol = false;
                 }
             }

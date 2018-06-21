@@ -336,7 +336,6 @@ public class GameCanvas extends BaseCanvas {
                 explosioncontrol = false;
             }
         }
-
         if (bulletcontrol == true) {
             if(Utils.checkCollision(bulletdestination,rockdestination)){
                 bulletcontrol = false;
@@ -429,7 +428,7 @@ public class GameCanvas extends BaseCanvas {
         }
 
         canvas.drawText("Cowboy x: " + spritedsty + spritedsth / 2, 10, 48, paint);
-        canvas.drawText("Cowboy y: " + spritedstx + spritedstw / 2 ,10, 80,paint);
+        canvas.drawText("Cowboy y: " + spritedstx + spritedstw / 2,10, 80,paint);
         if (enemycontrol) {
             enemysource.set(enemysrcx, enemysrcy, enemysrcx + enemysrcw, enemysrcy + enemysrch);
             enemydestination.set(enemydstx, enemydsty, enemydstx + enemydstw, enemydsty + enemydsth);
@@ -439,6 +438,7 @@ public class GameCanvas extends BaseCanvas {
                 explosionsource.set(explosionsrcx, explosionsrcy, explosionsrcw + explosionsrcx, explosionsrcy + explosionsrch);
                 explosiondestination.set(enemydstx - enemydstw / 2, enemydsty - enemydsth / 2, enemydstx + explosiondstx / 2, enemydsty + explosiondsth);
                 canvas.drawBitmap(explosion, explosionsource, explosiondestination, null);
+                canvas.drawText("Explosion Detected ",10, 112,paint);
         }
         if(spritesheetcontrol) {
             spritesource.set(spritesrcx, spritesrcy, spritesrcx + spritesrcw, spritesrcy + spritesrch);
@@ -458,10 +458,13 @@ public class GameCanvas extends BaseCanvas {
             reloadsource.set(reloadsrcx, reloadsrcy, reloadsrcx + reloadsrcw, reloadsrcy + reloadsrch);
             reloaddestination.set(reloaddstx, reloaddsty, reloaddstx + reloaddstw, reloaddsty + reloaddsth);
             canvas.drawBitmap(reloadbutton, reloadsource, reloaddestination, null);
+            if(explosioncontrol == false)canvas.drawText("Reload",10, 112,paint);
+            else canvas.drawText("Reload ",10, 144,paint);
+
         }
 
         if(bulletcontrol){
-            Log.i("Control","Cizdiriliyor Kurşun" + bulletdstx);
+          //  Log.i("Control","Cizdiriliyor Kurşun" + bulletdstx);
             bulletsource.set(bulletsrcx, bulletsrcy, bulletsrcx + bulletsrcw, bulletsrcy + bulletsrch);
             bulletdestination.set(bulletdstx, bulletdsty, bulletdstx + bulletdstw, bulletdsty + bulletdsth);
             canvas.drawBitmap(bullet, bulletsource, bulletdestination,null);

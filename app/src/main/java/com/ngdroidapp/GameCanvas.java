@@ -1,20 +1,28 @@
 package com.ngdroidapp;
 
+        import android.app.Activity;
+        import android.content.Context;
         import android.graphics.Bitmap;
         import android.graphics.Canvas;
         import android.graphics.Color;
         import android.graphics.Paint;
         import android.graphics.Rect;
+        import android.media.AudioManager;
+        import android.media.MediaExtractor;
+        import android.media.MediaPlayer;
+        import android.media.SoundPool;
         import android.widget.Toast;
 
 
         import com.mycompany.myngdroidapp.GameActivity;
+        import com.mycompany.myngdroidapp.R;
 
         import java.util.Random;
         import java.util.logging.Handler;
 
         import istanbul.gamelab.ngdroid.base.BaseCanvas;
         import istanbul.gamelab.ngdroid.core.MainThread;
+        import istanbul.gamelab.ngdroid.core.NgMediaPlayer;
         import istanbul.gamelab.ngdroid.util.Log;
         import istanbul.gamelab.ngdroid.util.Utils;
 
@@ -30,6 +38,10 @@ public class GameCanvas extends BaseCanvas {
             bulletsource, bulletdestination, enemysource, enemydestination,reloadsource, reloaddestination, explosionsource, explosiondestination;
     //Random metodu
     Random newRandom;
+
+    //Ateş Efekti
+    private MediaPlayer fxshot,fxfire,fxlose;
+
     //explosionsource genişlik, yükseklik, explosiondestination, genişlik, yükseklik
     private int explosionsrcw, explosionsrch, explosiondstw, explosiondsth;
     private int explosionsrcx, explosionsrcy, explosiondstx, explosiondsty;
@@ -89,6 +101,7 @@ public class GameCanvas extends BaseCanvas {
         super(ngApp);
     }
 
+
     public void setup() {
         Log.i(TAG, "setup");
         setupTile();
@@ -99,6 +112,7 @@ public class GameCanvas extends BaseCanvas {
         setupReloadButton();
         setupText();
         setupExplosion();
+        setupSound();
     }
 
     public void setupExplosion(){
@@ -118,7 +132,19 @@ public class GameCanvas extends BaseCanvas {
 
 
     }
-
+    public void setupSound(){
+        //public SoundPool (int maxStreams, int streamType, int srcQuality)
+        fxshot = MediaPlayer.create(root.activity, R.raw.fxhostcartoon);
+        fxfire = MediaPlayer.create(root.activity, R.raw.fxfoom);
+        fxlose = MediaPlayer.create(root.activity, R.raw.fxlose2);
+    }
+    public void playShotSound(){
+        fxshot.start();
+    }
+    public void playFireSound(){
+        fxfire.start();
+    }
+    public void playLoseSound(){fxlose.start();}
     public void setupText(){
         paint = new Paint();
         paint.setColor(Color.BLACK);
@@ -353,13 +379,12 @@ public class GameCanvas extends BaseCanvas {
                         explosionframenumx = 0;
                         explosionframenumy = 0;
                         explosioncontrol = true;
+                        playFireSound();
                     }
             }else if (bulletdstx > getWidth() + 64 || bulletdstx < -96 || bulletdsty > getHeight() + 64 || bulletdsty < -96) {
                 bulletcontrol = false;
                 Log.i("Control", "" + bulletdstx);
             }
-
-
 
         }
         if (framenum > animationlastframenum[animationtype]) {
@@ -409,6 +434,7 @@ public class GameCanvas extends BaseCanvas {
             spritevx = 0;
             spritesheetcontrol = false;
             reloadcontrol = true;
+            playLoseSound();
             Log.i(TAG, "Collusion Detected Enemy/SpriteSheet");
         }
         }
@@ -542,6 +568,7 @@ public class GameCanvas extends BaseCanvas {
                 buttonsrcx = 0;
                 if(!bulletcontrol){
                     shoot();
+                    playShotSound();
                 }
             }
             else if(x > getWidth()/2 - reloaddstw / 2 && y > getHeight() - 32 - reloaddsth && x < getWidth() / 2 +reloaddstw / 2 && y < getHeight() -32 ){

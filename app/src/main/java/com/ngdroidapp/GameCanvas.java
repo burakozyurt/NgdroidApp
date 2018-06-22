@@ -358,7 +358,7 @@ public class GameCanvas extends BaseCanvas {
                 spritedstx, spritedsty, spritedstx + spritedstw, spritedsty +spritedsth ))){
             if(enemydsty > randomy + enemydstw / 2 || enemydsty < randomy - enemydstw / 2 ){
                 enemyix = 0;
-                enemyiy = (randomy - enemydsty) / Math.abs((randomy - enemydsty));
+                enemyiy = (randomy - enemydsty) / Math.abs((randomy - enemydsty)); //+1 veya -1 döndürür buda düşmanın y ekseninde ki ivmesini belirler
 
             }else if(enemydstx >  randomx + enemydstw || enemydstx < randomx - enemydstw){
                 enemyix = (randomx - enemydstx) / Math.abs((randomx - enemydstx));

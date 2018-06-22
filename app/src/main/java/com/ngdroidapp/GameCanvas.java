@@ -37,7 +37,8 @@ public class GameCanvas extends BaseCanvas {
     private Rect tilesource, tiledestination, spritesource, spritedestination, rocksource, rockdestination, buttonsource, buttondestination,
             bulletsource, bulletdestination, enemysource, enemydestination,reloadsource, reloaddestination, explosionsource, explosiondestination;
     //Random metodu
-    Random newRandom;
+    Random newRandomx ,newRandomy;
+    private int randomx,randomy;
 
     //Ateş Efekti
     private MediaPlayer fxshot,fxfire,fxlose;
@@ -114,7 +115,7 @@ public class GameCanvas extends BaseCanvas {
         setupExplosion();
         setupSound();
     }
-
+    
     public void setupExplosion(){
         explosion = Utils.loadImage(root,"explosion2.png");
         explosionsource = new Rect();
@@ -143,6 +144,7 @@ public class GameCanvas extends BaseCanvas {
     }
     public void playFireSound(){
         fxfire.start();
+        fxfire.setVolume(1.0f,1.0f);
     }
     public void playLoseSound(){fxlose.start();}
     public void setupText(){
@@ -151,7 +153,7 @@ public class GameCanvas extends BaseCanvas {
         paint.setTextSize(32);
     }
     public void setupReloadButton(){
-        newRandom=new Random();
+        
         reloadbutton = Utils.loadImage(root,"reload.png");
         reloadsource = new Rect();
         reloaddestination = new Rect();
@@ -288,7 +290,10 @@ public class GameCanvas extends BaseCanvas {
 
     public void setupEnemy() {
         //Enemy Set
-
+        newRandomx=new Random();
+        newRandomy=new Random();
+        randomx = newRandomx.nextInt(getWidth() - enemydstw);
+        randomy = newRandomy.nextInt(getHeight() - enemydsth);
         enemycontrol = true;
         enemy = Utils.loadImage(root, "enemyufo.png");
         enemysource = new Rect();
@@ -346,7 +351,46 @@ public class GameCanvas extends BaseCanvas {
         }
 
     }
+    public void EnemyWalk(){
+        //Karakterimiz düşmanın 128 birimlik alanında olup olmadığını kontrol ettik
 
+        if(!(Utils.checkCollision(enemydstx - 128,enemydsty - 128, enemydstx + enemydstw + 128 , enemydsty + enemydsth + 128,
+                spritedstx, spritedsty, spritedstx + spritedstw, spritedsty +spritedsth ))){
+            if(enemydsty > randomy + enemydstw / 2 || enemydsty < randomy - enemydstw / 2 ){
+                enemyix = 0;
+                enemyiy = (randomy - enemydsty) / Math.abs((randomy - enemydsty));
+
+            }else if(enemydstx >  randomx + enemydstw || enemydstx < randomx - enemydstw){
+                enemyix = (randomx - enemydstx) / Math.abs((randomx - enemydstx));
+                enemyiy = 0;
+            }
+            else {
+                randomx = newRandomx.nextInt(getWidth() - enemydstw);
+                randomy = newRandomy.nextInt(getHeight() - enemydsth);
+            }
+        }
+        else{
+            EnemyAttack();
+        }
+
+    }
+    public void EnemyAttack(){
+       if(spritesheetcontrol) {
+           if (enemydsty < spritedsty + spritedsth / 2) {
+               enemyiy = 1;
+               enemyix = 0;
+           } else if (enemydsty > spritedsty + spritedstw / 2) {
+               enemyiy = -1;
+               enemyix = 0;
+           } else if (enemydstx < spritedstx + spritedstw / 2) {
+               enemyix = 1;
+               enemyiy = 0;
+           } else if (enemydstx > spritedstx + spritedstw / 2) {
+               enemyix = -1;
+               enemyiy = 0;
+           }
+       }
+    }
     public void update() {
         bulletdstx += bulletvx * bulletix;
         bulletdsty += bulletvy * bulletiy;
@@ -366,7 +410,12 @@ public class GameCanvas extends BaseCanvas {
             explosioncontrol = false;
             }
         }
-
+        if(enemycontrol) {
+            EnemyWalk();
+        }else {
+            enemyix = 0;
+            enemyiy = 0;
+        }
         if (bulletcontrol) {
             if(Utils.checkCollision(bulletdestination,rockdestination)){
                 bulletcontrol = false;
@@ -400,6 +449,10 @@ public class GameCanvas extends BaseCanvas {
         }
         else if(enemydstx < 0) {
             enemyix = 1;
+        }else if(enemydsty > getHeight() - spritedsth){
+            enemyiy = -1;
+        }else if(enemydsty < 0){
+            enemyiy = 1;
         }
         if (spritedstx > getWidth() - spritedstw) {
             spritedstx = getWidth() - spritedstw;
@@ -578,7 +631,6 @@ public class GameCanvas extends BaseCanvas {
                     reloadcontrol = false;
                     enemyix = 1;
                     explosioncontrol = false;
-                    enemydsty = newRandom.nextInt(getHeight() - enemydsth);
                 }
                 if(!spritesheetcontrol){
                     spritesheetcontrol=true;
